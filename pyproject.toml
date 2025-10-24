@@ -1,0 +1,125 @@
+# pyproject.toml
+
+[project]
+name = "stonks"
+version = "0.1.0"
+description = "A machine learning project for stonks"
+readme = "README.md"
+requires-python = ">=3.10" # Recommended based on package versions
+license = "MIT"
+authors = [
+    { name = "Pratik Chaudhari", email = "prat.c64@gmail.com" }, 
+]
+keywords = ["machine-learning", "stocks", "trading", "quant", "llm", "ai"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+
+
+dependencies = [
+    # Web Framework & ASGI Server
+    "Flask",
+    "uvicorn",
+    "starlette",
+    "httpx",
+    "anyio",
+    "aiohttp",
+    # Data Science & Numerical Computing
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    # LLM/AI Frameworks & Related
+    "langchain",
+    "langchain-chroma",
+    "langchain-community",
+    "langchain-core", # Core components of LangChain
+    "langchain-ollama", # For Ollama integration with LangChain
+    "langchain-text-splitters", # Text splitting utilities for LangChain
+    "langsmith", # LangChain observability platform
+    "ollama", # Direct client for Ollama
+    "chromadb", # Vector database
+    "huggingface-hub", # For interacting with Hugging Face models/datasets
+    "onnxruntime", # If you're directly running ONNX models
+    # Database
+    "SQLAlchemy", # ORM for database interactions
+    "psycopg2", # PostgreSQL adapter (if using PostgreSQL with SQLAlchemy)
+    # Utilities & Other Core Libraries
+    "requests", # Very common HTTP client
+    "pydantic", # Data validation and parsing (often a core dependency in modern Python projects)
+    "pydantic-settings", # For managing application settings with Pydantic
+    "typer", # For building command-line interfaces
+    "tqdm", # Progress bars
+    "python-dotenv", # For managing environment variables
+    "PyYAML", # For YAML parsing (e.g., config files)
+    "click", # CLI framework (Typer builds on Click, but sometimes Click is used directly)
+    "rich", # For rich terminal output
+    "coloredlogs", # Enhanced terminal logging
+    "backoff", # For retry logic
+    "cachetools", # For caching
+    "dataclasses-json", # If you're serializing dataclasses to/from JSON
+    "google-auth", # If directly using Google APIs for authentication
+    "grpcio", # If directly using gRPC (often pulled by Google APIs/TensorFlow)
+    "orjson", # For faster JSON operations if directly integrated
+    "pyOpenSSL", # Often a direct dep if you need specific SSL/TLS features
+    "PyPika", # If you're directly building SQL queries
+    "sse-starlette", # If using Server-Sent Events with Starlette
+    "watchfiles", # If you're using file watching (e.g., for hot reloading in dev)
+    "websocket-client", # If directly using a WebSocket client
+    "aiohappyeyeballs", # Looks like a specific async utility, assuming direct
+    "durationpy", # For parsing durations
+    "mcp", # Looks like a custom/specific project dependency, assuming direct
+    "propcache", # Looks like a custom/specific project dependency, assuming direct
+    "overrides", # For method overriding
+    "opentelemetry-api", # Base for OpenTelemetry if you're instrumenting
+    "opentelemetry-exporter-otlp-proto-grpc", # If exporting OTLP traces via gRPC
+    "opentelemetry-sdk", # OpenTelemetry SDK
+    "sympy", # Symbolic mathematics (if you're doing advanced math)
+    "python-multipart", # If handling multipart form data (e.g., with FastAPI/Starlette)
+    # If you have specific reasons for these to be direct:
+    # "autobahn",
+    # "Twisted", # (And its core deps like Automat, zope.interface, incremental, constantly, txaio)
+    # "cryptography",
+    # "certifi",
+    "cowsay>=6.1",
+    "pyotp>=2.9.0",
+    "fastapi>=0.116.1",
+    "psycopg[binary]>=3.2.9",
+    "questdb[dataframe]>=3.0.0",
+    "nsepython>=2.97",
+    "retry>=0.9.2",
+    "openpyxl>=3.1.5",
+    "xlwings>=0.33.15",
+    "yfinance>=0.2.65",
+    "dhanhq>=2.0.2",
+    "bsedata>=0.6.0",
+]
+
+# Optional dependencies for development, testing, etc.
+# These will not be installed by default unless you explicitly ask for them
+# (e.g., uv pip install --extras dev --requirements uv.lock).
+[project.optional-dependencies]
+dev = [
+    "pytest",        # For unit testing
+    "ruff",          # For linting and formatting
+    "mypy",          # For static type checking
+    "build",         # For building Python distributions
+    "pyproject_hooks", # Part of the build system
+]
+
+# Build system configuration (standard for modern Python projects)
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# Example of how you might configure tools
+# [tool.ruff]
+# line-length = 120
+# target-version = "py39"
+
+# [tool.pytest.ini_options]
+# addopts = "--strict-markers"
+# python_files = "test_*.py"
+
+
+[tool.setuptools]
+packages = {find = {where = ["."], exclude = ["old", "old.*"]}}
