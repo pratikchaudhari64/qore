@@ -85,7 +85,7 @@ pandas==2.2.3
 posthog==5.4.0
 propcache==0.3.2
 protobuf==6.31.1
-psycopg2==2.9.10
+psycopg2-binary==2.9.10
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pybase64==1.4.1
@@ -102,7 +102,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
 python-multipart==0.0.20
 pytz==2025.2
-pywin32==310
+# pywin32==310
 PyYAML==6.0.2
 referencing==0.36.2
 requests==2.32.3
