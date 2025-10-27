@@ -11,6 +11,16 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+SETTINGS_DIR = os.path.dirname(os.path.abspath(__file__))
+dotenv_path = os.path.join(SETTINGS_DIR, '.env')
+load_dotenv(dotenv_path)
+
+# API KEYS and other sensitive info
+# KITE_API_KEY = os.environ.get('KITE_API_KEY')
+# KITE_API_SECRET = os.environ.get('KITE_API_SECRET')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +31,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-%#r&^%lq5)t3ayn^p53^n*67*tg@wu08$y4(u(^lu4&pdzb_@f'
+# encryption key for encrypted fields in db
 ENCRYPTION_KEY = 'WxmLppl_f5TRnkQYVURn-AkjXTSkeAKUZhmAw3EGqZs='
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

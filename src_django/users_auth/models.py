@@ -27,6 +27,21 @@ class UserProfile(models.Model):
     kite_pwd = EncryptedField(max_length=255, blank=False, null=False, help_text="Kite password (encrypted).")
     totp_key = EncryptedField(max_length=255, blank=True, null=True, help_text="TOTP secret key (encrypted).")
     
+    # Kite api creds
+    kite_api_key = EncryptedField(
+        max_length=64, # Standard length for API keys
+        blank=False,
+        null=False, 
+        help_text="The application's Kite API Key (encrypted)."
+    )
+
+    kite_api_secret = EncryptedField(
+        max_length=128, # Standard length for API secrets
+        blank=False,
+        null=False, 
+        help_text="The application's Kite API Secret (encrypted)."
+    )
+
     # access_token used for API calls
     access_token = EncryptedField(
         max_length=512,
