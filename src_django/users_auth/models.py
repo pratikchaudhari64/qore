@@ -82,9 +82,15 @@ class Trades(models.Model):
         help_text="Unique trade identifier from the exchange (fill ID)."
     )
 
+    account_id = models.CharField(
+        max_length=50, 
+        db_index=True,
+        help_text="The trading account ID associated with the trade (e.g., Zerodha Client ID)."
+    )
+
     # Core Transaction Details
     order_id = models.CharField(max_length=50, db_index=True)
-    exchange_order_id = models.CharField(max_length=50)
+    exchange_order_id = models.CharField(max_length=50) 
 
     # Instrument Details
     tradingsymbol = models.CharField(max_length=50, db_index=True)
@@ -97,8 +103,7 @@ class Trades(models.Model):
     # DecimalField is crucial for currency/price to prevent floating point errors
     average_price = models.DecimalField(max_digits=12, decimal_places=4)
     transaction_type = models.CharField(max_length=12) # BUY or SELL
-    
-    # Kite has other fields like 'price', 'trigger_price', but 'average_price' is key for the ledger
+
     
     # Timestamps (Crucial for time-series analysis)
     # fill_timestamp is the accurate execution time we discussed
