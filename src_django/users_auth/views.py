@@ -10,7 +10,7 @@ def kite_redirect_handler(request: HttpRequest) -> HttpResponse:
     redirect_status = request.GET.get('status') 
     request_token = request.GET.get('request_token')
 
-    # print(f"request token received: {request}")
+    # print(f"request token received: {request_token}")
     return HttpResponse(f"redirect status: {redirect_status}")
     # if request_token:
     #     # TODO: Use the request_token to generate the session
