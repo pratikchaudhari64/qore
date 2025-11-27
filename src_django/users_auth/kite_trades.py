@@ -62,6 +62,12 @@ def fetch_trades():
             user=profile.user, 
             trade_id__in=trades_df['trade_id'].astype(str).tolist() # Cast to str for consistency
         ).values_list('trade_id', flat=True))
+
+        # Convert timestamp columns to datetime
+        timestamp_cols = ['fill_timestamp', 'order_timestamp', 'exchange_timestamp']
+        for col in timestamp_cols:
+            if col in trades_df.columns:
+                trades_df[col] = pd.to_datetime(trades_df[col])
         
         # Iterate over the DataFrame rows
         for index, row in trades_df.iterrows():

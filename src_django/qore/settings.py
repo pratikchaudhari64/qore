@@ -49,6 +49,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     "users_auth.apps.UsersAuthConfig",
+    "market_data.apps.MarketDataConfig",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -163,5 +164,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'users_auth.tasks.fetch_daily_kite_trades',
         # 'schedule': crontab(minute='*'),  # Every minute (for testing only!)
         'schedule': crontab(hour=17, minute=0),  # 5:00 PM IST daily
+    },
+
+    'renew-dhan-access-tokens': {
+        'task': 'market_data.tasks.renew_and_store_dhan_token',
+        'schedule': crontab(hour=6, minute=30),  # 6:30 AM IST daily
     },
 }
