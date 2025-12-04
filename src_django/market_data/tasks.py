@@ -1,4 +1,4 @@
-from .scrapers import screener
+from .scrapers import screener, nse_data, bse_data
 from .api_pulls import dhan_data
 import market_data.quest_db as quest_db
 import os
@@ -238,7 +238,19 @@ def dhan_fetch_hist_data(symb_slice = None):
         'total_success_count': success_count
     }
     
+@shared_task
+def nse_fetch_metadata_and_store(symbslice = None):
 
+    nse_fetch_res = nse_data.nse_fetch_market_metadata(symb_slice=symbslice)
+
+    return nse_fetch_res
+
+@shared_task
+def bse_fetch_metadata_and_store(symbslice = None):
+    
+    bse_fetch_res = bse_data.bse_fetch_market_metadata(symb_slice=symbslice)
+    
+    return bse_fetch_res
 
 if __name__ == '__main__':
 
