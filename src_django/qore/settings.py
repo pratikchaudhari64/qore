@@ -42,6 +42,7 @@ ALLOWED_HOSTS = [
     '140.238.240.80',
     '127.0.0.1',
     'localhost',
+    'openqore.duckdns.org'
 ]
 
 
@@ -168,6 +169,6 @@ CELERY_BEAT_SCHEDULE = {
 
     'renew-dhan-access-tokens': {
         'task': 'market_data.tasks.renew_and_store_dhan_token',
-        'schedule': crontab(hour=6, minute=30),  # 6:30 AM IST daily
+        'schedule': crontab(hour='6,18', minute=30),
     },
 }
