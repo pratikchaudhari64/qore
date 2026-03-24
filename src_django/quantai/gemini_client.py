@@ -11,15 +11,41 @@ from . import amcharts_mcp
 
 logger = logging.getLogger(__name__)
 
+_SKILL_DIR = os.path.join(os.path.dirname(__file__), "skill")
+_skill_context_cache: str | None = None
+
+
+def _load_full_skill() -> str:
+    global _skill_context_cache
+    if _skill_context_cache is not None:
+        return _skill_context_cache
+
+    parts = []
+    skill_md = os.path.join(_SKILL_DIR, "SKILL.md")
+    if os.path.exists(skill_md):
+        with open(skill_md) as f:
+            parts.append(f.read())
+
+    refs_dir = os.path.join(_SKILL_DIR, "references")
+    if os.path.isdir(refs_dir):
+        for fname in sorted(os.listdir(refs_dir)):
+            if fname.endswith(".md"):
+                with open(os.path.join(refs_dir, fname)) as f:
+                    parts.append(f.read())
+
+    _skill_context_cache = "\n\n---\n\n".join(parts)
+    logger.info(f"Loaded amCharts skill: {len(_skill_context_cache)} chars across {len(parts)} file(s)")
+    return _skill_context_cache
+
+
 SYSTEM_PROMPT = """You are QuantAI, an AI assistant that responds in structured JSON blocks.
 
-You have access to tools that let you look up amCharts 5 chart documentation and code examples.
+You have full amCharts 5 documentation embedded at the end of this prompt — use it directly to build charts.
 
 When the user provides data to visualize:
-1. Call list_chart_types to see what chart options exist
+1. Use the embedded amCharts 5 reference below to select the right chart type and generate correct code — no tool calls needed for chart selection
 2. Pick the most appropriate chart type for the data
-3. Call get_chart_reference for that chart type to get a working code example
-4. Generate a complete amCharts 5 JavaScript function body based on the example, with the user's actual data inlined
+3. Generate a complete amCharts 5 JavaScript function body with the user's actual data inlined
 
 Your final response must be a valid JSON array of blocks — nothing else, no markdown fences.
 
@@ -50,25 +76,6 @@ Respond ONLY with the JSON array as your final output."""
 
 AMCHARTS_TOOLS = [
     {
-        "name": "list_chart_types",
-        "description": "List all amCharts 5 chart types with their categories. Call this first to see what chart options exist.",
-        "parameters": {"type": "object", "properties": {}, "required": []},
-    },
-    {
-        "name": "get_chart_reference",
-        "description": "Get full reference documentation for a specific amCharts 5 chart type including API patterns.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "chartType": {
-                    "type": "string",
-                    "description": "Chart type keyword, e.g. 'pie', 'xy', 'radar', 'treemap', 'sankey', 'stock', 'gantt'",
-                }
-            },
-            "required": ["chartType"],
-        },
-    },
-    {
         "name": "get_quick_start",
         "description": "Get a minimal working amCharts 5 code example for a specific chart type. Returns ready-to-use code.",
         "parameters": {
@@ -94,6 +101,41 @@ AMCHARTS_TOOLS = [
         },
     },
 ]
+
+_system_prompt_cache: str | None = None
+
+
+_ENVIRONMENT_OVERRIDES = """
+## CRITICAL ENVIRONMENT OVERRIDES — these override any skill/reference instructions above
+
+This code runs inside a pre-initialised amCharts 5 environment. The following are ABSOLUTE rules:
+
+- DO NOT call `am5.Root.new()` — `root` is already created and passed in scope
+- DO NOT call `root.setThemes()` — themes are already applied
+- DO NOT call `root.dispose()` — lifecycle is managed externally
+- Start directly with `root.container.children.push(...)` to create the chart
+- All variables (`root`, `am5`, `am5xy`, `am5percent`, `am5map`, `am5radar`, `am5flow`, `am5hierarchy`, `am5wc`, `am5stock`, `am5themes_Animated`, `am5geodata_worldLow`, `am5geodata_indiaLow`) are already in scope — do not import or redeclare them
+- End the code with `chart.appear(1000, 100)`
+- NEVER put literal newline characters inside single/double-quoted JS strings — use `\\n` or template literals
+"""
+
+
+def _get_system_prompt() -> str:
+    global _system_prompt_cache
+    if _system_prompt_cache is None:
+        skill = _load_full_skill()
+        if skill:
+            _system_prompt_cache = (
+                SYSTEM_PROMPT
+                + "\n\n---\n\n## amCharts 5 Full Reference\n\n"
+                + skill
+                + "\n\n---\n\n"
+                + _ENVIRONMENT_OVERRIDES
+            )
+        else:
+            _system_prompt_cache = SYSTEM_PROMPT
+    return _system_prompt_cache
+
 
 _MODEL_NAME = "gemini-2.5-flash"
 # "gemini-2.5-flash"
@@ -145,7 +187,7 @@ def query_gemini(prompt: str) -> list[dict]:
             model=_MODEL_NAME,
             contents=contents,
             config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
+                system_instruction=_get_system_prompt(),
                 tools=tools,
             ),
         )
