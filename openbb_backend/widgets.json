@@ -1,0 +1,432 @@
+{
+  "hello_world": {
+    "name": "Hello World",
+    "description": "A simple markdown widget that displays Hello World",
+    "category": "Hello World",
+    "type": "markdown",
+    "endpoint": "hello_world",
+    "gridData": {"w": 12, "h": 4},
+    "params": [
+      {
+        "paramName": "name",
+        "value": "",
+        "label": "Name",
+        "type": "text",
+        "description": "Enter your name"
+      }
+    ]
+  },
+  
+  "portfolio_timeline": {
+    "name": "Portfolio Performance",
+    "description": "Full portfolio invested vs market value over time",
+    "endpoint": "portfolio_timeline",
+    "type": "table",
+    "category": "Portfolio",
+    "subCategory": "Performance",
+    "gridData": {"w": 40, "h": 15},
+    "data": {
+      "table": {
+        "showAll": true,
+        "enableCharts": true,
+        "chartView": {
+          "enabled": true,
+          "chartType": "line",
+          "cellRangeCols": {
+            "line": ["date", "invested_value", "market_value"],
+            "area": ["date", "invested_value", "market_value"],
+            "column": ["date", "invested_value", "market_value"]
+          }
+        },
+        "columnsDefs": [
+          {
+            "field": "date",
+            "headerName": "Date",
+            "cellDataType": "date",
+            "chartDataType": "category",
+            "width": 120
+          },
+          {
+            "field": "invested_value",
+            "headerName": "Invested Value",
+            "cellDataType": "number",
+            "formatterFn": "int",
+            "chartDataType": "series",
+            "width": 150
+          },
+          {
+            "field": "market_value",
+            "headerName": "Market Value",
+            "cellDataType": "number",
+            "formatterFn": "int",
+            "chartDataType": "series",
+            "width": 150
+          },
+          {
+            "field": "unrealized_pnl",
+            "headerName": "Unrealized P&L",
+            "cellDataType": "number",
+            "formatterFn": "int",
+            "chartDataType": "series",
+            "width": 150
+          },
+          {
+            "field": "unique_symbols",
+            "headerName": "Holdings Count",
+            "cellDataType": "number",
+            "formatterFn": "int",
+            "chartDataType": "excluded",
+            "width": 120
+          }
+        ]
+      }
+    }
+  },
+  
+  "bucket_timeline": {
+    "name": "Bucket Performance",
+    "description": "Investment bucket performance comparison over time",
+    "endpoint": "bucket_timeline",
+    "type": "table",
+    "category": "Portfolio",
+    "subCategory": "Buckets",
+    "gridData": {"w": 40, "h": 15},
+    "params": [
+      {
+        "paramName": "bucket",
+        "label": "Investment Bucket",
+        "type": "endpoint",
+        "optionsEndpoint": "available_buckets",
+        "value": "etf",
+        "description": "Select investment category to view performance"
+      }
+    ],
+    "data": {
+      "table": {
+        "showAll": true,
+        "enableCharts": true,
+        "chartView": {
+          "enabled": true,
+          "chartType": "line",
+          "cellRangeCols": {
+            "line": ["date", "invested_value", "market_value"],
+            "area": ["date", "invested_value", "market_value"],
+            "column": ["date", "invested_value", "market_value"]
+          }
+        },
+        "columnsDefs": [
+          {
+            "field": "date",
+            "headerName": "Date",
+            "cellDataType": "date",
+            "chartDataType": "category",
+            "width": 120
+          },
+          {
+            "field": "invested_value",
+            "headerName": "Invested Value",
+            "cellDataType": "number",
+            "formatterFn": "int",
+            "chartDataType": "series",
+            "width": 150
+          },
+          {
+            "field": "market_value",
+            "headerName": "Market Value",
+            "cellDataType": "number",
+            "formatterFn": "int",
+            "chartDataType": "series",
+            "width": 150
+          },
+          {
+            "field": "unique_symbols",
+            "headerName": "Holdings Count",
+            "cellDataType": "number",
+            "formatterFn": "int",
+            "chartDataType": "excluded",
+            "width": 120
+          }
+        ]
+      }
+    }
+  },
+
+  "stock_candlestick_chart_enhanced": {
+    "name": "Stock Candlestick Chart",
+    "description": "Advanced candlestick chart with dynamic symbol search, multiple exchanges, and comprehensive timeframe options. Supports WTD, MTD, YTD, R12M, R3Y, R5Y, LTD periods with full interactive pan/zoom capabilities.",
+    "category": "equity",
+    "subCategory": "price",
+    "endpoint": "stock/candlestick",
+    "type": "chart",
+    "raw": true,
+    "gridData": {
+      "w": 40,
+      "h": 15,
+      "minW": 20,
+      "minH": 10,
+      "maxH": 30
+    },
+    "params": [
+      {
+        "paramName": "symbol",
+        "value": "RELIANCE",
+        "label": "Symbol/Company",
+        "type": "endpoint",
+        "optionsEndpoint": "stock/search",
+        "optionsParams": {
+          "exchange": "$exchange"
+        },
+        "show": true,
+        "description": "Search and select stock symbol or company name",
+        "style": {
+          "popupWidth": 450
+        }
+      },
+      {
+        "paramName": "exchange",
+        "value": "NSE",
+        "label": "Exchange",
+        "type": "text",
+        "show": true,
+        "description": "Select stock exchange (NSE or BSE)",
+        "options": [
+          {
+            "label": "NSE",
+            "value": "NSE",
+            "extraInfo": {
+              "description": "National Stock Exchange",
+              "rightOfDescription": "India"
+            }
+          },
+          {
+            "label": "BSE",
+            "value": "BSE",
+            "extraInfo": {
+              "description": "Bombay Stock Exchange",
+              "rightOfDescription": "India"
+            }
+          }
+        ]
+      },
+      {
+        "paramName": "interval",
+        "value": "1d",
+        "label": "Candle Interval",
+        "type": "text",
+        "show": true,
+        "description": "Candle stick timeframe/interval",
+        "options": [
+          {
+            "label": "1 Day",
+            "value": "1d"
+          },
+          {
+            "label": "1 Week",
+            "value": "1w"
+          }
+        ]
+      },
+      {
+        "paramName": "period",
+        "value": "ytd",
+        "label": "Time Period",
+        "type": "text",
+        "show": true,
+        "description": "Select predefined time period or custom range",
+        "options": [
+          {
+            "label": "WTD",
+            "value": "wtd",
+            "extraInfo": {
+              "description": "Week to Date"
+            }
+          },
+          {
+            "label": "MTD",
+            "value": "mtd",
+            "extraInfo": {
+              "description": "Month to Date"
+            }
+          },
+          {
+            "label": "YTD",
+            "value": "ytd",
+            "extraInfo": {
+              "description": "Year to Date"
+            }
+          },
+          {
+            "label": "R12M",
+            "value": "r12m",
+            "extraInfo": {
+              "description": "Rolling 12 Months"
+            }
+          },
+          {
+            "label": "R3Y",
+            "value": "r3y",
+            "extraInfo": {
+              "description": "Rolling 3 Years"
+            }
+          },
+          {
+            "label": "R5Y",
+            "value": "r5y",
+            "extraInfo": {
+              "description": "Rolling 5 Years"
+            }
+          },
+          {
+            "label": "LTD",
+            "value": "ltd",
+            "extraInfo": {
+              "description": "Life to Date (All Available Data)"
+            }
+          },
+          {
+            "label": "Custom",
+            "value": "custom",
+            "extraInfo": {
+              "description": "Custom Date Range"
+            }
+          }
+        ]
+      },
+      {
+        "paramName": "start_date",
+        "value": "$currentDate-1y",
+        "label": "Start Date",
+        "type": "date",
+        "show": true,
+        "description": "Custom start date (only applicable when period is 'custom')"
+      },
+      {
+        "paramName": "end_date",
+        "value": "$currentDate",
+        "label": "End Date",
+        "type": "date",
+        "show": true,
+        "description": "Custom end date (only applicable when period is 'custom')"
+      },
+      {
+        "paramName": "show_volume",
+        "value": true,
+        "label": "Show Volume",
+        "type": "boolean",
+        "show": true,
+        "description": "Display volume bars below the candlestick chart"
+      }
+    ],
+    "source": [
+      "Your Data API"
+    ],
+    "refetchInterval": 60000,
+    "staleTime": 30000
+  },
+
+
+
+
+  "stock_chart": {
+    "name": "Stock Price Chart",
+    "description": "Display stock price over time",
+    "endpoint": "stock/chart",
+    "type": "chart",
+    "raw": true,
+    "category": "Portfolio",
+    "subCategory": "stocks",
+    "gridData": { "w": 40, "h": 15 },
+    "params": [
+      {
+        "paramName": "symbol",
+        "label": "Symbol",
+        "type": "endpoint",
+        "optionsEndpoint": "stock/search",
+        "optionsParams": { "query": "" },
+        "enableSearch": true,
+        "value": "RELIANCE",
+        "description": "Search for a stock symbol"
+      },
+      {
+        "paramName": "time_period",
+        "label": "Time Period",
+        "type": "text",
+        "options": [
+          { "label": "1M", "value": "1M" },
+          { "label": "3M", "value": "3M" },
+          { "label": "6M", "value": "6M" },
+          { "label": "YTD", "value": "YTD" },
+          { "label": "1Y", "value": "1Y" },
+          { "label": "3Y", "value": "3Y" },
+          { "label": "5Y", "value": "5Y" },
+          { "label": "LTD", "value": "LTD" }
+        ],
+        "value": "1Y",
+        "description": "Select time period for chart"
+      }
+    ]
+  },
+
+
+
+
+  "annual_reports": {
+    "name": "Financial Statements",
+    "description": "Annual P&L, Cash Flow, Balance Sheet",
+    "category": "Portfolio",
+    "subCategory": "stocks",
+    "type": "table",
+    "endpoint": "stocks/financial_reports",
+    "gridData": { "w": 36, "h": 28 },
+    "columnsDefs": [
+      { "field": "year", "headerName": "Year", "pinned": "left", "cellDataType": "text" }
+    ],
+    "params": [
+      {
+        "paramName": "symbol",
+        "label": "Symbol",
+        "type": "endpoint",
+        "optionsEndpoint": "stock/search",
+        "optionsParams": { "query": "" },
+        "enableSearch": true,
+        "value": "RELIANCE",
+        "description": "Search for a stock symbol"
+      },
+      {
+        "paramName": "statement",
+        "label": "Statement",
+        "type": "text",
+        "options": [
+          { "label": "Profit & Loss", "value": "pnl" },
+          { "label": "Cash Flow",     "value": "cash_flow" },
+          { "label": "Balance Sheet", "value": "balance_sheet" }
+        ],
+        "value": "pnl",
+        "description": "Select financial statement"
+      }
+    ]
+  },
+
+
+  "stock_holding": {
+    "name": "Stock Holding Detail",
+    "description": "Shows investment details for a specific stock holding",
+    "category": "Portfolio",
+    "type": "markdown",
+    "endpoint": "stock/holding",
+    "gridData": {
+      "w": 20,
+      "h": 9
+    },
+    "params": [
+      {
+        "paramName": "symbol",
+        "value": "RELIANCE",
+        "label": "Symbol",
+        "type": "text",
+        "description": "Stock ticker symbol"
+      }
+    ]
+  }
+
+}

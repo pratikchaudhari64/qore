@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canvas</title>
+<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/radar.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/flow.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/hierarchy.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/wc.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/stock.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/geodata/indiaLow.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&family=SF+Pro+Text:wght@300;400;500&display=swap');
+
+/* SF Pro via system stack — closest to Apple native */
+:root {
+  --font-display: -apple-system, "SF Pro Display", "Helvetica Neue", sans-serif;
+  --font-text: -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif;
+
+  /* Light mode — Apple-standard */
+  --bg: #f5f5f7;
+  --bg-elevated: rgba(255,255,255,0.82);
+  --bg-card: rgba(255,255,255,0.9);
+  --bg-input: rgba(255,255,255,0.95);
+  --bg-button: #1d1d1f;
+  --bg-button-hover: #2d2d2f;
+
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #aeaeb2;
+  --text-button: #ffffff;
+
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.13);
+  --border-input: rgba(0,0,0,0.12);
+
+  --accent: #0071e3;
+  --accent-light: rgba(0, 113, 227, 0.08);
+  --accent-green: #34c759;
+  --accent-orange: #ff9500;
+
+  --shadow-card: 0 2px 20px rgba(0,0,0,0.06), 0 0 0 0.5px rgba(0,0,0,0.06);
+  --shadow-elevated: 0 8px 40px rgba(0,0,0,0.10), 0 0 0 0.5px rgba(0,0,0,0.08);
+  --shadow-input: 0 2px 12px rgba(0,0,0,0.05);
+
+  --blur: blur(20px);
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --bg-elevated: rgba(28,28,30,0.85);
+    --bg-card: rgba(28,28,30,0.9);
+    --bg-input: rgba(44,44,46,0.9);
+    --bg-button: #ffffff;
+    --bg-button-hover: #f5f5f7;
+    --text-primary: #f5f5f7;
+    --text-secondary: #98989d;
+    --text-tertiary: #6c6c70;
+    --text-button: #000000;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.13);
+    --border-input: rgba(255,255,255,0.1);
+    --accent: #2997ff;
+    --accent-light: rgba(41, 151, 255, 0.1);
+    --shadow-card: 0 2px 20px rgba(0,0,0,0.3), 0 0 0 0.5px rgba(255,255,255,0.06);
+    --shadow-elevated: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(255,255,255,0.06);
+    --shadow-input: 0 2px 12px rgba(0,0,0,0.3);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-text);
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Header ─── */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 52px;
+  background: var(--bg-elevated);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-bottom: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-inner {
+  max-width: 760px;
+  width: 100%;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 0 2px rgba(52,199,89,0.2);
+  transition: background 0.3s;
+}
+.status-dot.thinking {
+  background: var(--accent-orange);
+  box-shadow: 0 0 0 2px rgba(255,149,0,0.2);
+  animation: breathe 1s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+/* ─── Main canvas ─── */
+main {
+  flex: 1;
+  margin-top: 52px;
+  padding: 0 24px 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ─── Empty state ─── */
+#empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 120px 0;
+  text-align: center;
+  animation: fadeUp 0.5s ease;
+}
+
+#empty-state .empty-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #e8e8ed, #d1d1d6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-card);
+}
+
+@media (prefers-color-scheme: dark) {
+  #empty-state .empty-icon {
+    background: linear-gradient(145deg, #3a3a3c, #2c2c2e);
+  }
+}
+
+#empty-state .empty-icon svg { opacity: 0.5; }
+
+#empty-state h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+#empty-state p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 20px;
+  max-width: 500px;
+}
+
+.suggestion-chip {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 0.5px solid var(--border-strong);
+  background: var(--bg-card);
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+}
+.suggestion-chip:hover {
+  background: var(--accent-light);
+  color: var(--accent);
+  border-color: rgba(0, 113, 227, 0.2);
+  transform: scale(1.02);
+}
+@media (prefers-color-scheme: dark) {
+  .suggestion-chip:hover {
+    border-color: rgba(41, 151, 255, 0.25);
+  }
+}
+
+/* ─── Response stream ─── */
+#response-area {
+  width: 100%;
+  max-width: 760px;
+  padding-top: 32px;
+}
+
+/* Query header */
+.query-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 20px;
+  animation: fadeUp 0.3s ease;
+}
+
+.query-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-button);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.query-avatar svg { opacity: 0.9; }
+
+@media (prefers-color-scheme: dark) {
+  .query-avatar svg path { fill: #000; }
+}
+
+.query-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.5;
+  padding-top: 4px;
+}
+
+/* ─── Blocks ─── */
+.block {
+  margin-bottom: 12px;
+  animation: fadeUp 0.35s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Text block */
+.text-block {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+}
+
+.text-block-header {
+  padding: 12px 18px 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.block-type-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.block-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-light);
+}
+
+.block-icon svg { width: 10px; height: 10px; }
+
+.text-content {
+  padding: 12px 18px 18px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.text-content strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.text-content em {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.text-content code {
+  font-family: "SF Mono", "Menlo", monospace;
+  font-size: 13px;
+  background: var(--accent-light);
+  color: var(--accent);
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+
+.text-content ul, .text-content ol {
+  padding-left: 20px;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.text-content li { line-height: 1.6; }
+
+/* Chart block */
+.chart-block {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+}
+
+.chart-block-header {
+  padding: 14px 18px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.chart-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--text-primary);
+}
+
+.chart-type-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+.chart-wrap {
+  padding: 20px 18px 18px;
+  position: relative;
+  height: 240px;
+}
+
+/* ─── Thinking state ─── */
+.thinking-card {
+  background: var(--bg-card);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: fadeUp 0.3s ease;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+}
+
+.thinking-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.thinking-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  animation: dot-bounce 1.2s ease-in-out infinite;
+}
+
+.thinking-dots span:nth-child(2) { animation-delay: 0.15s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-4px); opacity: 1; }
+}
+
+.thinking-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* ─── Input area ─── */
+#input-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 12px 24px 24px;
+  background: linear-gradient(to top, var(--bg) 60%, transparent);
+}
+
+.input-container {
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--bg-input);
+  border: 0.5px solid var(--border-input);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevated);
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 10px 10px 18px;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.input-container:focus-within {
+  border-color: rgba(0, 113, 227, 0.3);
+  box-shadow: var(--shadow-elevated), 0 0 0 3px rgba(0, 113, 227, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  .input-container:focus-within {
+    border-color: rgba(41, 151, 255, 0.3);
+    box-shadow: var(--shadow-elevated), 0 0 0 3px rgba(41, 151, 255, 0.08);
+  }
+}
+
+textarea#prompt {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: var(--font-text);
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 24px;
+  max-height: 120px;
+  padding: 0;
+  caret-color: var(--accent);
+}
+
+textarea#prompt::placeholder {
+  color: var(--text-tertiary);
+}
+
+#send-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-button);
+  color: var(--text-button);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+}
+
+#send-btn:hover:not(:disabled) {
+  background: var(--bg-button-hover);
+  transform: scale(1.05);
+}
+
+#send-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+#send-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+#send-btn svg { width: 14px; height: 14px; }
+
+/* ─── Divider ─── */
+.response-divider {
+  height: 0.5px;
+  background: var(--border);
+  margin: 24px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <span class="wordmark">Canvas</span>
+    <div class="status-dot" id="status-dot"></div>
+  </div>
+</header>
+
+<!-- Main -->
+<main>
+  <!-- Empty state -->
+  <div id="empty-state">
+    <div class="empty-icon">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+        <path d="M13 3C7.477 3 3 7.477 3 13s4.477 10 10 10 10-4.477 10-10S18.523 3 13 3Z" fill="#1d1d1f" fill-opacity="0.15"/>
+        <path d="M9 13h8M13 9v8" stroke="#1d1d1f" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>Good morning.</h1>
+    <p>Ask anything, or give me data to visualize.</p>
+    <div class="suggestions">
+      <div class="suggestion-chip" onclick="fillPrompt('Explain how compound interest works')">Compound interest</div>
+      <div class="suggestion-chip" onclick="fillPrompt('Plot revenue: Jan 120, Feb 145, Mar 132, Apr 168, May 190, Jun 210')">Plot sample data</div>
+      <div class="suggestion-chip" onclick="fillPrompt('Compare BEL vs HAL stock growth: BEL Jan 280, Feb 310, Mar 340 and HAL Jan 3800, Feb 4100, Mar 3950')">Multi-series chart</div>
+      <div class="suggestion-chip" onclick="fillPrompt('What are the key metrics to watch in defence sector stocks?')">Defence sector</div>
+    </div>
+  </div>
+
+  <!-- Response area -->
+  <div id="response-area" style="display:none;"></div>
+</main>
+
+<!-- Input -->
+<div id="input-bar">
+  <div class="input-container">
+    <textarea id="prompt" placeholder="Message Canvas…" rows="1"></textarea>
+    <button id="send-btn" onclick="submit()">
+      <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7 11.5V2.5M7 2.5L3 6.5M7 2.5L11 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const promptEl = document.getElementById('prompt');
+const sendBtn = document.getElementById('send-btn');
+const emptyState = document.getElementById('empty-state');
+const responseArea = document.getElementById('response-area');
+const statusDot = document.getElementById('status-dot');
+let chartRoots = [];
+
+// Auto-resize textarea
+promptEl.addEventListener('input', () => {
+  promptEl.style.height = 'auto';
+  promptEl.style.height = Math.min(promptEl.scrollHeight, 120) + 'px';
+});
+
+promptEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); }
+});
+
+function fillPrompt(text) {
+  promptEl.value = text;
+  promptEl.dispatchEvent(new Event('input'));
+  promptEl.focus();
+}
+
+function setThinking(on) {
+  statusDot.classList.toggle('thinking', on);
+  sendBtn.disabled = on;
+}
+
+async function submit() {
+  const prompt = promptEl.value.trim();
+  if (!prompt) return;
+
+  // Dispose previous charts before clearing DOM
+  chartRoots.forEach(r => r.dispose());
+  chartRoots = [];
+
+  // Hide empty, show response area
+  emptyState.style.display = 'none';
+  responseArea.style.display = 'block';
+  responseArea.innerHTML = '';
+
+  // Query header
+  const qHeader = document.createElement('div');
+  qHeader.className = 'query-header';
+  qHeader.innerHTML = `
+    <div class="query-avatar">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="4.5" r="2.5" fill="white"/>
+        <path d="M1 12.5c0-2.485 2.686-4.5 6-4.5s6 2.015 6 4.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="query-text">${escapeHtml(prompt)}</div>
+  `;
+  responseArea.appendChild(qHeader);
+
+  // Thinking card
+  const thinking = document.createElement('div');
+  thinking.className = 'thinking-card';
+  thinking.innerHTML = `
+    <div class="thinking-dots"><span></span><span></span><span></span></div>
+    <div class="thinking-text">Thinking…</div>
+  `;
+  responseArea.appendChild(thinking);
+
+  setThinking(true);
+  promptEl.value = '';
+  promptEl.style.height = 'auto';
+
+  try {
+    // Phase 1: enqueue the task, get a job_id back instantly
+    const submitRes = await fetch('/quantai/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    const { job_id, error: submitError } = await submitRes.json();
+
+    if (submitError) {
+      thinking.remove();
+      renderBlock({ type: 'text', content: `**Error:** ${submitError}` });
+      setThinking(false);
+      return;
+    }
+
+    // Phase 2: poll until done
+    const poll = setInterval(async () => {
+      try {
+        const r = await fetch(`/quantai/result/${job_id}`);
+        const data = await r.json();
+
+        if (data.status === 'pending') return; // keep thinking card, wait next tick
+
+        clearInterval(poll);
+        thinking.remove();
+
+        if (data.status === 'done') {
+          (data.blocks || []).forEach((block, i) => {
+            setTimeout(() => renderBlock(block), i * 60);
+          });
+        } else {
+          renderBlock({ type: 'text', content: `**Error:** ${data.error || 'Unknown error'}` });
+        }
+
+        setThinking(false);
+        responseArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (pollErr) {
+        clearInterval(poll);
+        thinking.remove();
+        renderBlock({ type: 'text', content: '**Connection error.** Make sure the backend is running.' });
+        setThinking(false);
+      }
+    }, 1000);
+
+  } catch (err) {
+    thinking.remove();
+    renderBlock({ type: 'text', content: '**Connection error.** Make sure the backend is running.' });
+    setThinking(false);
+  }
+}
+
+function renderBlock(block) {
+  if (block.type === 'text') renderText(block);
+  else if (block.type === 'chart') renderChart(block);
+}
+
+function renderText(block) {
+  const el = document.createElement('div');
+  el.className = 'block text-block';
+  el.innerHTML = `
+    <div class="text-block-header">
+      <div class="block-icon">
+        <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 2.5h8M1 5h6M1 7.5h4" stroke="${getAccentColor()}" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="block-type-label">Response</span>
+    </div>
+    <div class="text-content">${parseMarkdown(block.content)}</div>
+  `;
+  responseArea.appendChild(el);
+}
+
+function renderChart(block) {
+  const id = 'c' + Date.now() + Math.random().toString(36).slice(2);
+  const el = document.createElement('div');
+  el.className = 'block chart-block';
+  el.innerHTML = `
+    <div class="chart-block-header">
+      <div class="chart-meta">
+        <div class="block-icon">
+          <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 8L3.5 4.5L6 6L9 2" stroke="${getAccentColor()}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="chart-title">${escapeHtml(block.title || 'Chart')}</span>
+      </div>
+    </div>
+    <div class="chart-wrap"><div id="${id}" style="width:100%;height:100%;"></div></div>
+  `;
+  responseArea.appendChild(el);
+
+  try {
+    const root = am5.Root.new(id);
+    root.setThemes([am5themes_Animated.new(root)]);
+    // Sanitize: replace literal newlines inside single/double-quoted string literals
+    // (Gemini occasionally emits multi-line strings that break new Function())
+    const safeCode = block.code.replace(/(["'])(?:(?!\1)[^\\]|\\.)*?\1/g, m =>
+      m.replace(/\r?\n/g, '\\n')
+    );
+    new Function('root', 'am5', 'am5xy', 'am5percent', 'am5map', 'am5radar', 'am5flow', 'am5hierarchy', 'am5wc', 'am5stock', 'am5themes_Animated', safeCode)(
+      root, am5, am5xy, am5percent, am5map, am5radar, am5flow, am5hierarchy, am5wc, am5stock, am5themes_Animated
+    );
+    chartRoots.push(root);
+  } catch (err) {
+    document.getElementById(id).innerHTML =
+      `<div style="color:var(--text-secondary);font-size:13px;padding:16px;">Chart error: ${escapeHtml(String(err))}</div>`;
+    console.error('amCharts render error:', err);
+  }
+}
+
+function getAccentColor() {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? '#2997ff' : '#0071e3';
+}
+
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function parseMarkdown(md) {
+  return md
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code>$1</code>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/((<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+}
+</script>
+</body>
+</html>

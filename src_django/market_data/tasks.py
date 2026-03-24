@@ -17,7 +17,7 @@ KITE_API_SECRET = os.getenv("KITE_API_SECRET")
 
 def get_kite_intrs():
     kite = KiteConnect(api_key=KITE_API_KEY)
-    kiteall_instr = pd.DataFrame(kite.instruments())\
+    kiteall_instr = pd.DataFrame(kite.instruments())
     
     return kiteall_instr
 
@@ -263,7 +263,21 @@ if __name__ == '__main__':
 
     django.setup()
 
+    from databases import quest_db
+
     res = dhan_fetch_hist_data(symb_slice=50)
     print(res)
+    
+    
+    # result = get_kite_intrs()
+    # result['timestamp'] = pd.Timestamp.now(tz='UTC').isoformat()
+    
+    # result['expiry'] = pd.to_datetime(result['expiry'])
+    # result['expiry'] = (result['expiry'].astype('int64') // 10**3)
 
+    # quest_db.insert_dataframe(table_name='kite_instruments_list',
+    #                           df = result,
+    #                           symbol_columns=['tradingsymbol'],
+    #                           timestamp_col = 'timestamp')
+    
     pass

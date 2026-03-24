@@ -51,6 +51,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     "users_auth.apps.UsersAuthConfig",
     "market_data.apps.MarketDataConfig",
+    "quantai.apps.QuantaiConfig",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

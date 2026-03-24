@@ -128,7 +128,7 @@ ipython_config.py
 __pypackages__/
 
 # Celery stuff
-celerybeat-schedule
+celerybeat-schedule*
 celerybeat.pid
 
 # SageMath parsed files
@@ -206,3 +206,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Stonks project — runtime/local files
+nohup.out
+notes.txt
+*.csv
+*.xlsx
+src_django/test_gemini.py
+testing_redis.py
